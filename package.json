@@ -1,0 +1,43 @@
+{
+    "name": "directus-extension-tab-group",
+    "version": "1.0.0",
+    "description": "A group interface with a tab menu for toggling the visibility of fields within the group",
+    "license": "GPL-3.0",
+    "author": "formfcw",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/formfcw/directus-extension-tab-group"
+    },
+    "icon": "extension",
+    "keywords": [
+        "directus",
+        "directus-extension",
+        "directus-custom-interface",
+        "tab-group",
+        "tabs",
+        "translation-tabs",
+        "translations",
+        "field-tabs"
+    ],
+    "type": "module",
+    "directus:extension": {
+        "type": "interface",
+        "path": "dist/index.js",
+        "source": "src/index.ts",
+        "host": "^10.1.11"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build-publish": "directus-extension build && npm publish",
+        "build": "directus-extension build",
+        "dev": "directus-extension build -w --no-minify",
+        "link": "directus-extension link"
+    },
+    "devDependencies": {
+        "@directus/extensions-sdk": "10.1.11",
+        "typescript": "^5.2.2",
+        "vue": "^3.3.6"
+    }
+}
