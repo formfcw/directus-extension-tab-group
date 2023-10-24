@@ -185,23 +185,16 @@
     }
 
     .menu-item :deep(.button:focus-visible) {
-        outline: 1px solid var(--primary);
+        outline: 1px solid var(--theme--primary, var(--primary));
     }
 
     .menu-item :deep(.button.active) {
-        /* --v-button-background-color-active: var(--border-normal); */
-        /* --v-button-color-active: var(--foreground-inverted); */
-        /* --v-button-background-color-active: var(--primary); */
-        /* --v-button-color-active: var(--foreground-inverted); */
-        /* --v-button-color-active: var(--foreground-normal); */
-        /* --v-button-background-color-active: var(--foreground-subdued); */
-
-        --v-button-color-active: var(--foreground-normal);
+        --v-button-color-active: var(--theme--foreground, var(--foreground-normal));
         --v-button-background-color-active: var(--border-normal);
     }
 
     .tab-group:hover .menu-item :deep(.button.active) {
         --v-button-color-active: var(--foreground-inverted);
-        --v-button-background-color-active: var(--primary);
+        --v-button-background-color-active: var(--theme--primary, var(--primary));
     }
 </style>
