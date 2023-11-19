@@ -160,18 +160,22 @@
         top: 0;
         left: calc(var(--content-padding) / 2 * -1);
         display: block;
-        width: var(--border-width);
+        width: var(--theme--border-width, var(--border-width));
         height: 100%;
-        background-color: var(--background-normal);
+        background-color: var(--theme--background-normal, var(--background-normal));
     }
 
     .tab-group:hover:before {
-        background-color: var(--border-normal);
+        background-color: var(--theme--border-color, var(--border-normal));
     }
 
     .menu {
         margin-bottom: 8px;
         line-height: 0;
+    }
+
+    .menu-item {
+        --theme--border-radius: 4px;
     }
 
     .menu-item:not(:first-child) {
@@ -190,7 +194,7 @@
 
     .menu-item :deep(.button.active) {
         --v-button-color-active: var(--theme--foreground, var(--foreground-normal));
-        --v-button-background-color-active: var(--border-normal);
+        --v-button-background-color-active: var(--theme--border-color-accent, var(--border-normal));
     }
 
     .tab-group:hover .menu-item :deep(.button.active) {
