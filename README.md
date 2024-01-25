@@ -15,11 +15,9 @@ pnpm add directus-extension-tab-group
 
 ## Use case
 
-The main use case for this extension is to provide an alternative solution to the translation interface. You can use this tab group interface to toggle fields individually or some of them or all of them together as you like. For example, you can toggle the visibility of a `title_de` and a `title_en` field.
+The main use case for this extension is to provide an alternative solution to the translation interface. You can use this tab group interface to toggle fields individually or some of them or all of them together as you like. For example, you can toggle the visibility of a `title_de` and a `title_en` field. In addition you can apply tab changes to other tab groups by using the `Bulk Apply Button`.
 
-![](docs/input-a.png)
-![](docs/input-b.png)
-![](docs/input-ab.png)
+<!-- INSERT VIDEO HERE -->
 
 ## Options
 
@@ -61,6 +59,12 @@ In your interface settings, you can use a JSON field to specify which button dis
     }
 ]
 ```
+
+There are also options to add an `All` tab to display all fields as specified and to add a `Bulk Apply Button` to other tab groups (using the same `Bulk Apply Key`).
+
+![](docs/settings.png)
+
+---
 
 ## Overwriting styles
 
