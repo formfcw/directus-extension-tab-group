@@ -1,6 +1,6 @@
 {
     "name": "directus-extension-tab-group",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "A group interface with a tab menu for toggling the visibility of fields within the group",
     "license": "GPL-3.0",
     "author": "formfcw",
