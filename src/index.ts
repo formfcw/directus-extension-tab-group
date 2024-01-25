@@ -50,7 +50,7 @@ export default defineInterface({
         },
         {
             field: "showAllButton",
-            name: "All tab",
+            name: "All Tab",
             type: "boolean",
             meta: {
                 width: "half",
@@ -65,13 +65,51 @@ export default defineInterface({
         },
         {
             field: "labelAllButton",
-            name: "All tab label",
+            name: "All Tab Label",
             meta: {
                 width: "half",
                 interface: "system-input-translated-string",
             },
             schema: {
                 default_value: "All",
+            },
+        },
+        {
+            field: "bulkApplyButton",
+            name: "Bulk Apply Button",
+            type: "boolean",
+            meta: {
+                width: "full",
+                interface: "boolean",
+                options: {
+                    label: "Add a button to apply tab changes to other tab groups",
+                },
+            },
+            schema: {
+                default_value: true,
+            },
+        },
+        {
+            field: "bulkApplyKey",
+            name: "Bulk Apply Key",
+            meta: {
+                width: "half",
+                interface: "input",
+                note: "The button only applies to groups with the same “Bulk Apply Key”.",
+            },
+            schema: {
+                default_value: "default",
+            },
+        },
+        {
+            field: "bulkApplyTooltip",
+            name: "Bulk Apply Button Tooltip",
+            meta: {
+                width: "half",
+                interface: "system-input-translated-string",
+            },
+            schema: {
+                default_value: "Apply To All",
             },
         },
     ],

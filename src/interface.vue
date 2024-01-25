@@ -3,12 +3,25 @@
         <div class="menu">
             <v-button
                 v-for="item in buttons"
-                @click="showField(item)"
+                @click="selectTab(item)"
                 xSmall
                 secondary
                 :active="item.active"
                 class="menu-item"
             >{{ item.label }}</v-button>
+            <v-button
+                v-if="showBulkApplyButton"
+                xSmall
+                secondary
+                class="menu-item menu-item-icon"
+                :tooltip="bulkApplyTooltip"
+                @click="bulkApplyStore?.setItem(activeTab!)"
+            >
+                <v-icon
+                    name="magic_button"
+                    xSmall
+                />
+            </v-button>
         </div>
         <v-form
             :initial-values="initialValues"
@@ -33,7 +46,8 @@
 
 <script setup lang="ts">
     import { Field, ValidationError } from '@directus/types';
-    import { onMounted, onUnmounted, ref } from 'vue';
+    import { onMounted, onUnmounted, ref, reactive, computed, watch } from 'vue';
+    import { useStorage } from '@vueuse/core'
 
     type ButtonField = {
         name: string;
@@ -64,86 +78,134 @@
             buttons?: Button[];
             showAllButton?: boolean;
             labelAllButton?: string;
+            bulkApplyButton?: boolean;
+            bulkApplyKey?: string;
+            bulkApplyTooltip?: string;
         }>(),
         {
             batchActiveFields: () => [],
             validationErrors: () => [],
             showAllButton: true,
             labelAllButton: 'All',
+            bulkApplyButton: true,
+            bulkApplyKey: 'default',
+            bulkApplyTooltip: 'Apply To All',
         }
     );
 
     defineEmits(['apply']);
 
-    const fieldsDefault = ref({});
 
-    const buttons = ref(props.buttons || []);
-    const fields = ref(props.fields || []);
+    const { fields, resetFieldToDefaults } = useFieldsDefault();
 
-    if (props.showAllButton) {
-        buttons.value.push({
-            label: props.labelAllButton,
-            fields: "*"
-        } as Button);
-    }
+    const { buttons, activeTab, selectTab } = useTabs();
 
+    const bulkApplyStore = useBulkApplyButton();
+    const showBulkApplyButton = computed(
+        () => bulkApplyStore !== null && activeTab.value?.label != bulkApplyStore?.getState()
+    );
 
     onMounted(() => {
-        fieldsDefault.value = _storeFieldsDefault();
-        const activeButton = _setActiveButton();
-        showField(activeButton);
+        selectTab(initialSelection());
+
+        function initialSelection(): Button {
+            const activeButtonByStore = bulkApplyStore?.getSelectableItem();
+            if (activeButtonByStore) return activeButtonByStore;
+
+            return activeTab.value ?? buttons[0];
+        }
     });
 
-    onUnmounted(() => {
-        fields.value.map(item => _resetFieldToDefaults(item));
-    });
 
+    function useBulkApplyButton() {
+        if (!props.bulkApplyButton) return null;
 
-    function showField(button: Button) {
-        fields.value.map(item => {
-            if (button.fields == '*') {
-                _resetFieldToDefaults(item);
-                return item;
-            }
+        const state = useStorage(`tab-group-bulk-apply-${props.bulkApplyKey}`, null as null | string);
 
-            const selectedField = button.fields.find(({ name }) => name === item.field);
-            item.meta!.hidden = !selectedField;
-            item.meta!.width = selectedField?.activeWidth ?? 'full';
+        watch(state, () => {
+            const buttonToSelect = getSelectableItem();
+            if (!buttonToSelect) return;
 
-            return item;
+            selectTab(buttonToSelect);
         });
 
-        buttons.value.map(item => {
-            item.active = button == item;
-            return item;
-        });
-    }
-
-    function _resetFieldToDefaults(item) {
-        item.meta!.hidden = fieldsDefault.value[item.field].hidden ?? false;
-        item.meta!.width = fieldsDefault.value[item.field].width ?? 'full';
-    }
-
-    function _storeFieldsDefault() {
-        const values = {};
-        fields.value.forEach(item => {
-            values[item.field] = {
-                hidden: item.meta?.hidden ?? false,
-                width: item.meta?.width ?? 'full',
-            };
-        });
-        return values;
-    }
-
-    function _setActiveButton(): Button {
-        let activeItem = buttons.value.find((item) => item.active);
-
-        if (!activeItem) {
-            buttons.value[0].active = true;
-            activeItem = buttons.value[0];
+        return {
+            setItem: (activeButton: Button) => { state.value = activeButton.label },
+            getState: () => state.value,
+            getSelectableItem,
         }
 
-        return activeItem;
+        function getSelectableItem() {
+            return buttons.find((item) => item.label == state.value);
+        }
+    }
+
+
+    function useTabs() {
+        const buttons = reactive(props.buttons || []);
+
+        if (props.showAllButton) {
+            buttons.push({
+                label: props.labelAllButton,
+                fields: "*"
+            } as Button);
+        }
+
+        const activeTab = computed<Button | undefined>(() => buttons.find((item) => item.active));
+
+        return {
+            buttons,
+            activeTab,
+            selectTab(button: Button) {
+                fields.value.map(item => {
+                    if (button.fields == '*') {
+                        resetFieldToDefaults(item);
+                        return item;
+                    }
+
+                    const selectedField = button.fields.find(({ name }) => name === item.field);
+                    item.meta!.hidden = !selectedField;
+                    item.meta!.width = selectedField?.activeWidth ?? 'full';
+
+                    return item;
+                });
+
+                buttons.map(item => {
+                    item.active = button == item;
+                    return item;
+                });
+            }
+        }
+    }
+
+
+    function useFieldsDefault() {
+        const fields = ref(props.fields || []);
+        const fieldsDefault = ref({});
+
+        onMounted(() => fieldsDefault.value = storeFieldsDefault());
+        onUnmounted(() => fields.value.map(item => resetFieldToDefaults(item)));
+
+        return {
+            fields,
+            resetFieldToDefaults,
+        };
+
+        function resetFieldToDefaults(item: any) {
+            item.meta!.hidden = fieldsDefault.value[item.field].hidden ?? false;
+            item.meta!.width = fieldsDefault.value[item.field].width ?? 'full';
+        }
+
+        function storeFieldsDefault() {
+            const values = {};
+            fields.value.forEach(item => {
+                values[item.field] = {
+                    hidden: item.meta?.hidden ?? false,
+                    width: item.meta?.width ?? 'full',
+                };
+            });
+            return values;
+        }
     }
 </script>
 
@@ -176,6 +238,7 @@
 
     .menu-item {
         --theme--border-radius: 4px;
+        vertical-align: top;
     }
 
     .menu-item:not(:first-child) {
@@ -186,6 +249,12 @@
         --v-button-height: 1.5em;
         --v-button-min-width: 3em;
         padding: 0.5em;
+    }
+
+    .menu-item.menu-item-icon :deep(.button) {
+        /* --v-button-height: 1.5em; */
+        --v-button-min-width: 1.5em;
+        padding: 0;
     }
 
     .menu-item :deep(.button:focus-visible) {
