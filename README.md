@@ -17,7 +17,7 @@ pnpm add directus-extension-tab-group
 
 The main use case for this extension is to provide an alternative solution to the translation interface. You can use this tab group interface to toggle fields individually or some of them or all of them together as you like. For example, you can toggle the visibility of a `title_de` and a `title_en` field. In addition you can apply tab changes to other tab groups by using the `Bulk Apply Button`.
 
-https://github.com/formfcw/directus-extension-tab-group/assets/78852214/7e4ce55d-cabb-4792-95b7-88be3b361eea
+<video src="https://github.com/formfcw/directus-extension-tab-group/assets/78852214/7e4ce55d-cabb-4792-95b7-88be3b361eea" controls="controls" muted="muted"><a href="https://github.com/formfcw/directus-extension-tab-group/assets/78852214/7e4ce55d-cabb-4792-95b7-88be3b361eea">Watch video</a></video>
 
 ## Options
 
