@@ -4,15 +4,6 @@
 
 A group interface with a tab menu for toggling the visibility of fields within the group.
 
-```sh
-# Install via npm
-npm install directus-extension-tab-group
-# Install via yarn
-yarn add directus-extension-tab-group
-# Install via pnpm
-pnpm add directus-extension-tab-group
-```
-
 ## Use case
 
 The main use case for this extension is to provide an alternative solution to the translation interface. You can use this tab group interface to toggle fields individually or some of them or all of them together as you like. For example, you can toggle the visibility of a `title_de` and a `title_en` field. In addition you can apply tab changes to other tab groups by using the `Bulk Apply Button`.
