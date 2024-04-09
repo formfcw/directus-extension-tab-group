@@ -112,7 +112,7 @@
             const activeButtonByStore = bulkApplyStore?.getSelectableItem();
             if (activeButtonByStore) return activeButtonByStore;
 
-            return activeTab.value ?? buttons[0];
+            return activeTab.value ?? buttons[0] as Button;
         }
     });
 
@@ -180,9 +180,9 @@
 
 
     function useFieldsDefault() {
+        const fieldsDefault = ref<Record<string, any>>({});
         const fields = ref(props.fields || []);
-        const fieldsDefault = ref({});
-
+        watch(() => props.fields, updateFieldsReadonlyProp);
         onMounted(() => fieldsDefault.value = storeFieldsDefault());
         onUnmounted(() => fields.value.map(item => resetFieldToDefaults(item)));
 
@@ -191,13 +191,22 @@
             resetFieldToDefaults,
         };
 
+        function updateFieldsReadonlyProp(updatedFields: Record<string, any>[]) {
+            fields.value = fields.value.map(item => {
+                const updated = updatedFields.find((updated) => updated.field == item.field);
+                if (updated)
+                    item.meta!.readonly = updated.meta!.readonly;
+                return item;
+            })
+        }
+
         function resetFieldToDefaults(item: any) {
             item.meta!.hidden = fieldsDefault.value[item.field].hidden ?? false;
             item.meta!.width = fieldsDefault.value[item.field].width ?? 'full';
         }
 
         function storeFieldsDefault() {
-            const values = {};
+            const values: Record<string, { hidden: boolean; width: string }> = {};
             fields.value.forEach(item => {
                 values[item.field] = {
                     hidden: item.meta?.hidden ?? false,
